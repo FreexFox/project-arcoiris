@@ -1,0 +1,37 @@
+{
+  "build": "B1",
+  "name": "Project ArcoIris Build B1",
+  "description": "Initial branding proof-of-concept and clean Live View Exposure Simulation",
+  "target_firmware": "Nikon D300S v1.02",
+  "stock_md5": "7f5503b795fc41c83a26e98d834d48ff",
+  "edits": [
+    {
+      "block": 1,
+      "offset": "0x1E2E5A",
+      "before": "f30e",
+      "after": "9fa0",
+      "purpose": "Live View Exposure Simulation: NOP conditional branch at 0x00222E5A so EV compensation applies dynamically to Live View brightness in A/M modes"
+    },
+    {
+      "block": 1,
+      "offset": "0x427FC2",
+      "before": "435553544f4d2053455454494e47204d454e55",
+      "after": "50524f4a454354204152434f49524953202020",
+      "purpose": "Menu header branding: 'CUSTOM SETTING MENU' -> 'PROJECT ARCOIRIS   '"
+    },
+    {
+      "block": 1,
+      "offset": "0x42829A",
+      "before": "4669726d776172652076657273696f6e",
+      "after": "50726f6a656374204172636f49726973",
+      "purpose": "Version screen branding: 'Firmware version' -> 'Project ArcoIris'"
+    },
+    {
+      "block": 1,
+      "offset": "0x428585",
+      "before": "454e55",
+      "after": "4f4453",
+      "purpose": "Menu tab branding: 'MY MENU' -> 'MY MODS'"
+    }
+  ]
+}

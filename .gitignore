@@ -1,0 +1,25 @@
+# Nikon proprietary binaries and packages
+*.bin
+*.exe
+*.zip
+*.asm
+*.asm.gz
+extracted/
+D300SUpdate/
+FLASH/
+firmwares/
+
+# External repositories
+fdkevin0-nft/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# System / editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

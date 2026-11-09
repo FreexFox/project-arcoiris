@@ -1,0 +1,28 @@
+{
+  "build": "B4",
+  "name": "Project ArcoIris Build B4",
+  "description": "Real-time Live View Luminance Histogram Engine + clean Exposure Simulation + Full Branding",
+  "target_firmware": "Nikon D300S v1.02",
+  "stock_md5": "7f5503b795fc41c83a26e98d834d48ff",
+  "patched_md5": "59200bc79598b198d7cfab84d82a7db5",
+  "features": [
+    "Real-time 2,048-point Live View luminance histogram (64-bin resolution)",
+    "Dynamic peak auto-scaling with clip protection for shadows (bin 0) and highlights (bin 63)",
+    "Smoked-glass translucent YCbCr overlay in bottom-left screen area (x=16..147, y=324..391)",
+    "Tear-free per-frame LCD backbuffer injection right before DMA address flip at 0x0013598E",
+    "Unconditional Live View Exposure Simulation via NOP at 0x00222E5A",
+    "EXIF Software Tag branded as 'ArcoIris'",
+    "In-camera menu branding ('PROJECT ARCOIRIS', 'Project ArcoIris', 'MY MODS')"
+  ],
+  "hook": {
+    "site": "0x0013598E (Block 1 offset 1:0x0F598E)",
+    "original_instructions": "LDI:32 #0x40040018, R12; ST R0, @R12 (8 bytes: 9F8C4004001814C0)",
+    "patched_instructions": "LDI:32 #0x002D2C00, R12; CALL @R12 (8 bytes: 9F8C002D2C00971C)",
+    "convention": "R0 carries newly rendered YCbCr 4:2:0 backbuffer address (0x96ED9B20 or 0x96F4A320)"
+  },
+  "code_cave": {
+    "address": "0x002D2C00..0x002D2D39 (Block 1 offset 1:0x292C00)",
+    "size_bytes": 314,
+    "source_generator": "scripts/build_b4_histogram.py"
+  }
+}

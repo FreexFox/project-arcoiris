@@ -1,0 +1,115 @@
+{
+  "build": "B3",
+  "name": "Project ArcoIris Build B3 (Experimental)",
+  "description": "Proof of concept in-camera menu toggle hook for Live View Exposure Simulation",
+  "target_firmware": "Nikon D300S v1.02",
+  "stock_md5": "7f5503b795fc41c83a26e98d834d48ff",
+  "notes": "Menu toggle proof of concept; menu item responds in UI, but hardware runtime state requires deeper event dispatch hook.",
+  "edits": [
+    {
+      "block": 1,
+      "offset": "0x114CD9",
+      "before": "0efbf004",
+      "after": "1f6f708b",
+      "purpose": "EXIF software tag pointer redirection"
+    },
+    {
+      "block": 1,
+      "offset": "0x12767F",
+      "before": "0efbf0",
+      "after": "1f6f70",
+      "purpose": "EXIF software tag pointer redirection"
+    },
+    {
+      "block": 1,
+      "offset": "0x12769E",
+      "before": "04",
+      "after": "8b",
+      "purpose": "EXIF software tag pointer adjust"
+    },
+    {
+      "block": 1,
+      "offset": "0x1B6F70",
+      "before": "323031332f30342f31312066",
+      "after": "4172636f4972697320205072",
+      "purpose": "String table: 'ArcoIris  Project ArcoIris B3'"
+    },
+    {
+      "block": 1,
+      "offset": "0x1B6F7D",
+      "before": "72206d6173732070726f64756374696f6e",
+      "after": "6a656374204172636f4972697320423300",
+      "purpose": "String table continuation"
+    },
+    {
+      "block": 1,
+      "offset": "0x1E2E4C",
+      "before": "9fcfda2c04c0",
+      "after": "002d2c00971c",
+      "purpose": "Live View Exposure Simulation trampoline hook to code cave at 0x002D2C00"
+    },
+    {
+      "block": 1,
+      "offset": "0x21555E",
+      "before": "e21a",
+      "after": "9fa0",
+      "purpose": "Menu toggle branch NOP"
+    },
+    {
+      "block": 1,
+      "offset": "0x21E100",
+      "before": "0440c14d00009f201440",
+      "after": "9f8c002d2c20970c9fa0",
+      "purpose": "Menu setting sync hook to 0x002D2C20"
+    },
+    {
+      "block": 1,
+      "offset": "0x292C00",
+      "before": "ffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "after": "9f8c9fcfda2c04c0a800e2069f8c9f8720e406c0b5c0b1f09720",
+      "purpose": "Code cave: read menu setting variable and branch"
+    },
+    {
+      "block": 1,
+      "offset": "0x292C20",
+      "before": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "after": "17819f859f87cba8c01d0250c0318210c381af10b750a425a605c15ca6c59f809f8720d7c23da5fd020cfdfd125c9f8c0025dabc971c9f849f88bce40440c14d0000144007819720",
+      "purpose": "Code cave: menu save sync handler"
+    },
+    {
+      "block": 1,
+      "offset": "0x427FC2",
+      "before": "435553544f4d2053455454494e47204d454e55",
+      "after": "50524f4a454354204152434f49524953202020",
+      "purpose": "Menu header branding"
+    },
+    {
+      "block": 1,
+      "offset": "0x42829A",
+      "before": "4669726d776172652076657273696f6e",
+      "after": "50726f6a656374204172636f49726973",
+      "purpose": "Version screen branding"
+    },
+    {
+      "block": 1,
+      "offset": "0x428585",
+      "before": "454e55",
+      "after": "4f4453",
+      "purpose": "Menu tab branding: 'MY MODS'"
+    },
+    {
+      "block": 1,
+      "offset": "0x42BE6F",
+      "before": "53637265656e2074697073",
+      "after": "4172636f49726973204c56",
+      "purpose": "Custom setting d4 label: 'ArcoIris LV'"
+    },
+    {
+      "block": 1,
+      "offset": "0x42C04A",
+      "before": "53637265656e2074697073",
+      "after": "4172636f49726973204c56",
+      "purpose": "Custom setting d4 detail text: 'ArcoIris LV'"
+    }
+  ]
+}

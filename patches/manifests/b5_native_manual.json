@@ -1,0 +1,45 @@
+{
+  "name": "Build B5: Native Manual (Native Manual Live View Exposure Simulation + Live Histogram)",
+  "version": "1.02-B5",
+  "base_firmware": "FLASH/REFLASH B4/D300S102.bin",
+  "output_firmware": "FLASH/REFLASH B5/D300S102.bin",
+  "output_md5": "6549191abe995c2f2b9253b3fd55ab2a",
+  "block0_crc16": "0xB506",
+  "block1_crc16": "0x46D8",
+  "hardware_verified": true,
+  "description": "Unlocks Nikon's dormant factory Manual Live View exposure routine (0x0012C22A) in Manual (M) mode via four 2-byte BEQ -> NOP patches while preserving B4's real-time 64-bin Live View luminance histogram, B1's EV compensation simulation (0x00222E5A), B2's EXIF/menu branding, and P/S/A Auto-AGC fallback.",
+  "edits_vs_b4": [
+    {
+      "block": 1,
+      "offset": "0x0EC290",
+      "virtual_address": "0x0012C290",
+      "before": "E209",
+      "after": "9FA0",
+      "description": "Gate 1 (0x0012C27E LV Entry / Large-Delta Mode A): NOP out BEQ 0x0012C2A4 on 0x9F87210F bit 4 so M mode calls 0x0012C22A"
+    },
+    {
+      "block": 1,
+      "offset": "0x0EC35C",
+      "virtual_address": "0x0012C35C",
+      "before": "E209",
+      "after": "9FA0",
+      "description": "Gate 2 (0x0012C34A Per-Frame Tracking Mode A): NOP out BEQ 0x0012C370 on 0x9F87210F bit 4 so M mode calls 0x0012C22A every frame"
+    },
+    {
+      "block": 1,
+      "offset": "0x0EC41A",
+      "virtual_address": "0x0012C41A",
+      "before": "E20C",
+      "after": "9FA0",
+      "description": "Gate 3 (0x0012C402 LV Entry / Large-Delta Mode B): NOP out BEQ 0x0012C434 on 0x9F87210F bit 4 so M mode calls 0x0012C22A"
+    },
+    {
+      "block": 1,
+      "offset": "0x0EC582",
+      "virtual_address": "0x0012C582",
+      "before": "E20C",
+      "after": "9FA0",
+      "description": "Gate 4 (0x0012C56A Per-Frame Tracking Mode B): NOP out BEQ 0x0012C59C on 0x9F87210F bit 4 so M mode calls 0x0012C22A every frame"
+    }
+  ]
+}

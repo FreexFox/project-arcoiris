@@ -1,0 +1,79 @@
+{
+  "build": "B2",
+  "name": "Project ArcoIris Build B2",
+  "description": "Menu branding, EXIF Software tag modification, and screen tip rewrites",
+  "target_firmware": "Nikon D300S v1.02",
+  "stock_md5": "7f5503b795fc41c83a26e98d834d48ff",
+  "edits": [
+    {
+      "block": 1,
+      "offset": "0x114CD9",
+      "before": "0efbf004",
+      "after": "1f6f708b",
+      "purpose": "EXIF software tag pointer redirection in JPEG generation routine"
+    },
+    {
+      "block": 1,
+      "offset": "0x12767F",
+      "before": "0efbf0",
+      "after": "1f6f70",
+      "purpose": "EXIF software tag pointer redirection in second writer path"
+    },
+    {
+      "block": 1,
+      "offset": "0x12769E",
+      "before": "04",
+      "after": "8b",
+      "purpose": "EXIF software tag pointer displacement adjust"
+    },
+    {
+      "block": 1,
+      "offset": "0x1B6F70",
+      "before": "323031332f30342f31312066",
+      "after": "4172636f4972697320205072",
+      "purpose": "String table edit: write 'ArcoIris  Project ArcoIris B2' over stock build date"
+    },
+    {
+      "block": 1,
+      "offset": "0x1B6F7D",
+      "before": "72206d6173732070726f64756374696f6e",
+      "after": "6a656374204172636f4972697320423200",
+      "purpose": "String table edit continuation"
+    },
+    {
+      "block": 1,
+      "offset": "0x427FC2",
+      "before": "435553544f4d2053455454494e47204d454e55",
+      "after": "50524f4a454354204152434f49524953202020",
+      "purpose": "Menu header branding: 'CUSTOM SETTING MENU' -> 'PROJECT ARCOIRIS   '"
+    },
+    {
+      "block": 1,
+      "offset": "0x42829A",
+      "before": "4669726d776172652076657273696f6e",
+      "after": "50726f6a656374204172636f49726973",
+      "purpose": "Version screen branding: 'Firmware version' -> 'Project ArcoIris'"
+    },
+    {
+      "block": 1,
+      "offset": "0x428585",
+      "before": "454e55",
+      "after": "4f4453",
+      "purpose": "Menu tab branding: 'MY MENU' -> 'MY MODS'"
+    },
+    {
+      "block": 1,
+      "offset": "0x42BE6F",
+      "before": "53637265656e2074697073",
+      "after": "4172636f49726973204c56",
+      "purpose": "Custom setting d4 label: 'Screen tips' -> 'ArcoIris LV'"
+    },
+    {
+      "block": 1,
+      "offset": "0x42C04A",
+      "before": "53637265656e2074697073",
+      "after": "4172636f49726973204c56",
+      "purpose": "Custom setting d4 detail text: 'Screen tips' -> 'ArcoIris LV'"
+    }
+  ]
+}
