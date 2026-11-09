@@ -1,6 +1,6 @@
 # Project ArcoIris — Live Histogram Assembly Engine
 
-This document describes the 314-byte Fujitsu FR80 assembly engine residing at `0x002D2C00` (Block 1 offset `0x292C00`) and its `INFO`-button visibility wrapper at `0x0025DA60` (Block 1 offset `0x21DA60`), included in **Builds B4 and B5: Native Manual**.
+This document describes the 314-byte Fujitsu FR80 assembly engine residing at `0x002D2C00` (Block 1 offset `0x292C00`) and its hook trampoline at `0x0025DA60` (Block 1 offset `0x21DA60`), included in **Builds B4 and B5: Native Manual**.
 
 ---
 
@@ -10,15 +10,13 @@ This document describes the 314-byte Fujitsu FR80 assembly engine residing at `0
 - **Frame Budget**: Live View runs at 24–30 FPS (`33.3 ms` to `40 ms` per frame). The histogram engine completes in **85,233 cycles (~0.64 ms)**, consuming under **2% of frame CPU time**.
 - **Footprint**:
   - `314` bytes at `0x002D2C00` (core 64-bin YCbCr sampling, normalization, and drawing routine).
-  - `128` bytes at `0x0025DA60` (`INFO`-button overlay mode check and frame dispatcher).
+  - `128` bytes at `0x0025DA60` (hook dispatcher from `0x0013598E`).
+- **Visibility Behavior**: In Builds B4 and B5, the histogram is **always-on** during Live View (the experimental check in `0x0025DA60` does not toggle on hardware; a working show/hide toggle is planned for **Build B6**).
 - **Register Hygiene**: Saves all general-purpose registers (`R0..R13, FP`) using `STM0` / `STM1` and restores them using `LDM0` / `LDM1`. The 128-byte histogram bin array is allocated and freed cleanly on the stack via `ADDSP #-0x80` / `ADDSP #0x80`.
 
 ---
 
 ## 2. Processing Pipeline
-
-### Step 0: `INFO` Button Visibility Check (`0x0025DA60`)
-Before running the histogram engine, the hook wrapper reads `*(uint8_t*)0x9F87CBA9` (the active Live View `INFO` overlay mode). If the user has cycled the `INFO` button to the clean display / HDMI output mode (`0x03`), the wrapper skips drawing the histogram and immediately commits the pristine frame to the LCD DMA controller (`0x40040018`).
 
 ### Step 1: Subsampling & Binning (2,048 Pixels)
 Instead of scanning all `272,640` Y-plane pixels (which would take ~15 ms per frame), the engine samples a uniform grid across the active sensor image (`640 × 426`):

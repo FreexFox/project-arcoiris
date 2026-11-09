@@ -66,8 +66,8 @@ Download **`D300S102.bin`** directly from the **[Releases Page (`v1.02-b5` — B
 2. **Why Shutter Speeds slower than `1/25s` do not brighten Live View further**:
    - In Live View, the CMOS sensor refreshes the screen at **24–30 fps** (each video frame lasts `1/30s` to `1/25s`). Physically, a live video frame cannot gather light for longer than a single frame period (`~1/25s`) without freezing the display refresh rate.
    - Therefore, from **`1/25s` up to `1/8000s`**, every `1/3 EV` dial click darkens/brightens Live View accurately. Shutter speeds slower than `1/25s` (`1/20s` down to `30"` and `Bulb`) stay clamped at the `1/25s` maximum single-frame brightness during preview (your actual captured photo still exposes for the full selected time).
-3. **Showing / Hiding the Live Histogram**:
-   - Press the **`INFO`** button on the back of the camera during Live View to cycle display overlays. Selecting the clean display / HDMI mode automatically hides the histogram.
+3. **Live Histogram Visibility (Always-On in B4/B5)**:
+   - In Builds B4 and B5, the 64-bin luminance histogram in the bottom-left corner is **always visible** while Live View is active (an on/off toggle is planned for **Build B6**).
 
 ---
 
@@ -87,7 +87,7 @@ Download **`D300S102.bin`** directly from the **[Releases Page (`v1.02-b5` — B
 | **Build B1** | Unlocked real-time **EV Compensation (`+/- EV`)** in Live View (`0x00222E5A`: `F3 0E -> 9F A0`) | `0x3F88` | `6f94e2c52950e6cf77879cb9e32c7554` |
 | **Build B2** | Custom menu strings (`PROJECT ARCOIRIS` / `MY MODS`) & EXIF Software tag (`D300S ArcoIris`) | `0x886B` | `15cb90f5623d95f861d8f4fc9a89660e` |
 | **Build B3** | Custom Settings menu toggle binding & state persistence tests | `0xD034` | `dc73eb1180823df108b55d9bc6b7c547` |
-| **Build B4** | Added **64-Bin Real-Time YCbCr Luminance Histogram** (`0x002D2C00`) + `INFO` visibility wrapper (`0x0025DA60`) | `0x0AA9` | `b4b09e180a29e37cb36f3069eb4159c8` |
+| **Build B4** | Added **64-Bin Real-Time YCbCr Luminance Histogram** (`0x002D2C00`, always-on in Live View) | `0x0AA9` | `b4b09e180a29e37cb36f3069eb4159c8` |
 | **Build B5: Native Manual** | **Unlocked Nikon's dormant factory Manual (`M`) Live View exposure routine (`0x0012C22A`)** on top of Build B4 | `0x46D8` | `6549191abe995c2f2b9253b3fd55ab2a` |
 
 ---
@@ -142,7 +142,7 @@ python3 d300s_tool.py info "FLASH/REFLASH B5/D300S102.bin"
 | [`patches/manifests/`](patches/manifests/) | JSON patch manifests for Builds `B1`, `B2`, `B3`, `B4`, and `B5: Native Manual` |
 | [`docs/LIVE_VIEW_MANUAL_EXPOSURE.md`](docs/LIVE_VIEW_MANUAL_EXPOSURE.md) | Complete disassembly & state-machine documentation of `0x0012C22A` (EN / [VI](docs/LIVE_VIEW_MANUAL_EXPOSURE.vi.md)) |
 | [`docs/LIVE_HISTOGRAM_ENGINE.md`](docs/LIVE_HISTOGRAM_ENGINE.md) | Technical breakdown of the 314-byte FR80 assembly 64-bin luminance histogram engine |
-| [`docs/LIVE_VIEW_PIPELINE.md`](docs/LIVE_VIEW_PIPELINE.md) | D300s Live View display pipeline, YCbCr 4:2:0 buffers, `INFO` gate & LCD DMA |
+| [`docs/LIVE_VIEW_PIPELINE.md`](docs/LIVE_VIEW_PIPELINE.md) | D300s Live View display pipeline, YCbCr 4:2:0 buffers & LCD DMA |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Firmware container XOR encryption, dual-CPU IPC, and memory/register map |
 | [`docs/OFF_CAMERA_VERIFICATION_REPORT.md`](docs/OFF_CAMERA_VERIFICATION_REPORT.md) | Container CRC analysis & Build `B1`–`B5` off-camera and on-camera verification matrix |
 | [`docs/SAFETY_AND_VERIFICATION.md`](docs/SAFETY_AND_VERIFICATION.md) | Block 0 zero-brick safety invariants and pre-flash verification protocol |

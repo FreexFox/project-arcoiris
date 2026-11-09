@@ -32,7 +32,7 @@ Every Project ArcoIris firmware build is deterministically generated from the of
 | **Build B1** | Unlock Live View EV Compensation (`+/- EV`) at `0x00222E5A` (`F3 0E -> 9F A0`) | `0xB506` (Untouched) | `0x3F88` | `6f94e2c52950e6cf77879cb9e32c7554` | ✅ Verified on D300s |
 | **Build B2** | Custom Menu (`PROJECT ARCOIRIS` / `MY MODS`) & EXIF Software Tag Redirection (`0x0EFBF0 -> 0x1F6F70`) | `0xB506` (Untouched) | `0x886B` | `15cb90f5623d95f861d8f4fc9a89660e` | ✅ Verified on D300s |
 | **Build B3** | Custom Settings Menu Toggle Binding Experiment | `0xB506` (Untouched) | `0xD034` | `dc73eb1180823df108b55d9bc6b7c547` | ✅ Verified on D300s |
-| **Build B4** | 64-Bin Real-Time YCbCr Luminance Histogram (`0x002D2C00`) + `INFO` Toggle (`0x0025DA60`) + B1 EV Comp | `0xB506` (Untouched) | `0x0AA9` | `b4b09e180a29e37cb36f3069eb4159c8` | ✅ Verified on D300s |
+| **Build B4** | 64-Bin Real-Time YCbCr Luminance Histogram (`0x002D2C00`, always-on) + B1 EV Comp | `0xB506` (Untouched) | `0x0AA9` | `b4b09e180a29e37cb36f3069eb4159c8` | ✅ Verified on D300s |
 | **Build B5: Native Manual** | **Native Manual (`M`) Shutter Speed & ISO Live View Exposure Simulation (`0x0012C22A`)** + B4 Histogram + B1 EV Comp | `0xB506` (Untouched) | `0x46D8` | `6549191abe995c2f2b9253b3fd55ab2a` | ✅ **Verified on D300s** |
 
 ---

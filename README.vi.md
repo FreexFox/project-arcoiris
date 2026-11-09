@@ -66,8 +66,8 @@ Tải trực tiếp file **`D300S102.bin`** tại trang **[Releases (`v1.02-b5` 
 2. **Tại sao tốc độ màn trập chậm hơn `1/25s` không làm màn hình Live View sáng thêm?**:
    - Khi chạy Live View, cảm biến CMOS phải xuất hình ảnh liên tục ở tốc độ **24–30 khung hình/giây** (`1/30s` đến `1/25s` mỗi khung hình). Về mặt vật lý, một khung hình video trực tiếp không thể phơi sáng lâu hơn chính chu kỳ quét của nó (`~1/25s`).
    - Do đó, trong dải từ **`1/25s` lên tới `1/8000s`**, mỗi nấc xoay bánh xe (`1/3 EV`) sẽ làm màn hình sáng/tối chính xác tuyệt đối. Các tốc độ chậm hơn `1/25s` (`1/20s` xuống tới `30"` và `Bulb`) sẽ giữ ở mức sáng tối đa của một khung hình (`1/25s`) trên màn hình xem trước (khi bấm chụp thật, máy vẫn phơi sáng đúng số giây bạn đã chọn).
-3. **Bật / Tắt Biểu Đồ Histogram**:
-   - Trong lúc bật Live View, bấm nút **`INFO`** ở mặt sau máy để chuyển đổi các chế độ hiển thị thông tin trên màn hình. Ở chế độ màn hình sạch (Clean Display / HDMI), biểu đồ Histogram sẽ tự động ẩn đi.
+3. **Biểu Đồ Histogram Luôn Hiển Thị (Trong Bản B4/B5)**:
+   - Ở bản Build B4 và B5 hiện tại, biểu đồ Luminance Histogram 64-bin ở góc dưới bên trái **luôn hiển thị cố định** khi bật Live View (tính năng bấm nút bật/tắt ẩn/hiện biểu đồ sẽ được bổ sung ở bản **Build B6**).
 
 ---
 
@@ -87,7 +87,7 @@ Tải trực tiếp file **`D300S102.bin`** tại trang **[Releases (`v1.02-b5` 
 | **Build B1** | Mở khóa giả lập **Bù trừ sáng EV (`+/- EV`)** khi Live View (`0x00222E5A`: `F3 0E -> 9F A0`) | `0x3F88` | `6f94e2c52950e6cf77879cb9e32c7554` |
 | **Build B2** | Cá nhân hóa chuỗi ký tự Menu (`PROJECT ARCOIRIS` / `MY MODS`) & thẻ EXIF Software (`D300S ArcoIris`) | `0x886B` | `15cb90f5623d95f861d8f4fc9a89660e` |
 | **Build B3** | Thử nghiệm liên kết nút bật/tắt trong Custom Settings Menu | `0xD034` | `dc73eb1180823df108b55d9bc6b7c547` |
-| **Build B4** | Bổ sung **Biểu đồ Luminance Histogram 64-Bin Thời gian thực** (`0x002D2C00`) + ẩn/hiện qua nút `INFO` (`0x0025DA60`) | `0x0AA9` | `b4b09e180a29e37cb36f3069eb4159c8` |
+| **Build B4** | Bổ sung **Biểu đồ Luminance Histogram 64-Bin Thời gian thực** (`0x002D2C00`, luôn hiển thị khi Live View) | `0x0AA9` | `b4b09e180a29e37cb36f3069eb4159c8` |
 | **Build B5: Native Manual** | **Mở khóa hàm điều khiển phơi sáng Live View chế độ `M` nguyên bản bị ẩn của Nikon (`0x0012C22A`)** trên nền B4 | `0x46D8` | `6549191abe995c2f2b9253b3fd55ab2a` |
 
 ---
@@ -142,7 +142,7 @@ python3 d300s_tool.py info "FLASH/REFLASH B5/D300S102.bin"
 | [`patches/manifests/`](patches/manifests/) | Các file JSON manifest cho Build `B1`, `B2`, `B3`, `B4` và `B5: Native Manual` |
 | [`docs/LIVE_VIEW_MANUAL_EXPOSURE.vi.md`](docs/LIVE_VIEW_MANUAL_EXPOSURE.vi.md) | Tài liệu phân tích kỹ thuật chi tiết mã hợp ngữ & cơ chế mở khóa `0x0012C22A` (VI / [EN](docs/LIVE_VIEW_MANUAL_EXPOSURE.md)) |
 | [`docs/LIVE_HISTOGRAM_ENGINE.md`](docs/LIVE_HISTOGRAM_ENGINE.md) | Phân tích kỹ thuật bộ dựng biểu đồ Luminance Histogram 64-bin bằng hợp ngữ FR80 (314 bytes) |
-| [`docs/LIVE_VIEW_PIPELINE.md`](docs/LIVE_VIEW_PIPELINE.md) | Hệ thống hiển thị Live View D300s, bộ đệm YCbCr 4:2:0, cổng `INFO` & DMA màn hình LCD |
+| [`docs/LIVE_VIEW_PIPELINE.md`](docs/LIVE_VIEW_PIPELINE.md) | Hệ thống hiển thị Live View D300s, bộ đệm YCbCr 4:2:0 & DMA màn hình LCD |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Định dạng đóng gói mã hóa XOR, giao tiếp liên nhân (IPC) và bản đồ bộ nhớ/thanh ghi |
 | [`docs/OFF_CAMERA_VERIFICATION_REPORT.md`](docs/OFF_CAMERA_VERIFICATION_REPORT.md) | Báo cáo kiểm chứng mã vòng CRC container & ma trận kiểm thử thực tế từ Build `B1`–`B5` |
 | [`docs/SAFETY_AND_VERIFICATION.md`](docs/SAFETY_AND_VERIFICATION.md) | Quy tắc bảo vệ an toàn tuyệt đối cho Block 0 và quy trình kiểm chứng trước khi nạp |

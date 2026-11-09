@@ -80,12 +80,11 @@ Bundle Offset        = Block 1 Offset + 0x00080072
 | `0x001EEA6B - 0x001EED6A` | **Live View CMOS Electronic Shutter & Gain Lookup Tables** (256-byte LUTs) |
 | `0x001EF0FC` | **Sub-CPU IPC Descriptor Entry 21** (Populates `0x9F872034`, 14 bytes) |
 | `0x00222E5A` | **Live View EV Compensation Gate** (`F3 0E -> 9F A0` unlocked in **Build B1**) |
-| `0x0025DA60 - 0x0025DAE0` | **`INFO`-Button Visibility Wrapper** for Live Histogram (**Build B4/B5**) |
-| `0x002D2C00 - 0x002D2D3A` | **64-Bin YCbCr Luminance Histogram Engine** (`314` bytes FR80 assembly, **Build B4/B5**) |
+| `0x0025DA60 - 0x0025DAE0` | **Histogram Hook Trampoline** (`0x0013598E -> 0x0025DA60 -> 0x002D2C00`, **Build B4/B5**) |
+| `0x002D2C00 - 0x002D2D3A` | **64-Bin YCbCr Luminance Histogram Engine** (`314` bytes FR80 assembly, always-on in **Build B4/B5**) |
 | `0x40040018` | **LCD Controller Y-Plane DMA Base Address Register** |
 | `0x96ED9B20` / `0x96F4A320` | **Live View YCbCr 4:2:0 Ping-Pong Framebuffers** ($640 \times 480$) |
 | `0x9F8711FC` | **`lv_agc_struct`**: Live View AGC State (`+0x1D` ISO, `+0x1E` Av, `+0x1F` Tv, `+0x010E` Fine Gain) |
 | `0x9F872028` / `0x9F872029` | **Active Hardware CMOS Shutter (`0x9F872028`) & Gain (`0x9F872029`) Staging Registers** |
 | `0x9F872034` | **Sub-CPU IPC Exposure Struct** (`+0x00` Mode bits `7:6`, `+0x02` ISO, `+0x05` Av, `+0x09` Tv) |
 | `0x9F87210F` | **Live View Feature Bitmask** (Bit `0x04` permanently cleared in stock ROM; bypassed in **Build B5**) |
-| `0x9F87CBA9` | **Live View `INFO` Overlay Mode State** (`0x03` = Clean HDMI / Clean Display, hides Histogram) |

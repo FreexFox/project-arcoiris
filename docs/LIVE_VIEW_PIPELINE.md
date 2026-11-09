@@ -1,6 +1,6 @@
 # Project ArcoIris — Live View Architecture & Display Pipeline
 
-This document details the reverse engineering of the Nikon D300s Live View display subsystem (`0x00134E28` – `0x00135C5C`), YCbCr 4:2:0 framebuffer layout, `INFO`-button overlay visibility control, and tear-free OSD injection mechanism used in **Builds B4 and B5: Native Manual**.
+This document details the reverse engineering of the Nikon D300s Live View display subsystem (`0x00134E28` – `0x00135C5C`), YCbCr 4:2:0 framebuffer layout, and tear-free OSD injection mechanism used in **Builds B4 and B5: Native Manual**.
 
 ---
 
@@ -16,10 +16,8 @@ flowchart TD
     Sensor --> ASIC["EXPEED Imaging ASIC\nHardware DMA Scaling to 640x426 YCbCr 4:2:0"]
     ASIC --> Backbuffer["Off-Screen YCbCr 4:2:0 Ping-Pong Buffer\n(0x96ED9B20 or 0x96F4A320)"]
     Backbuffer --> AF_Box["Draw Dynamic AF Box (CPU STB loops)"]
-    AF_Box --> Hook["Display Buffer Flip Hook (0x0013598E)\nCalls Wrapper at 0x0025DA60"]
-    Hook --> InfoCheck{"INFO Overlay Mode\n*(uint8_t*)0x9F87CBA9 == 3?"}
-    InfoCheck -- "No (Standard Overlays)" --> HistEngine["64-Bin Luminance Histogram Engine\n(0x002D2C00, 314 bytes FR80 ASM)"]
-    InfoCheck -- "Yes (Clean Display / HDMI)" --> LCD_DMA
+    AF_Box --> Hook["Display Buffer Flip Hook (0x0013598E)\nDispatches via 0x0025DA60"]
+    Hook --> HistEngine["64-Bin Luminance Histogram Engine\n(0x002D2C00, 314 bytes FR80 ASM — Always-On in B4/B5)"]
     HistEngine --> LCD_DMA["Write Backbuffer Addr to LCD DMA (0x40040018)"]
     LCD_DMA --> Display["3.0-inch 921k-dot VGA Rear LCD (640x480)"]
 ```
@@ -36,7 +34,7 @@ flowchart TD
      ST      R0, @R12             ; write completed backbuffer ptr to LCD DMA
      ```
    - At this point, `R0` holds the 32-bit SDRAM address of the completed off-screen frame (`0x96ED9B20` or `0x96F4A320`).
-   - Project ArcoIris redirects `0x0013598E` to the wrapper at `0x0025DA60`, which checks `*(uint8_t*)0x9F87CBA9` (the Live View `INFO` button overlay mode). Unless the user has cycled `INFO` to the clean display mode (`0x03`), it invokes the 64-bin histogram engine at `0x002D2C00` to render directly into the off-screen backbuffer *before* writing `R0` to `0x40040018`.
+   - Project ArcoIris redirects `0x0013598E` (via the trampoline at `0x0025DA60`) to the 64-bin histogram engine at `0x002D2C00`, which renders the histogram directly into the off-screen backbuffer *before* writing `R0` to `0x40040018`. *(Note: In Builds B4 and B5, the histogram is always rendered on-screen during Live View; an on-camera toggle is planned for **Build B6**).*
    - Result: **100% tear-free, flicker-free rendering** that directly reflects real-time Manual Shutter Speed, ISO, and EV Compensation changes.
 
 ---

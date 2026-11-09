@@ -52,5 +52,4 @@ trailer: off=0x780072 (16B) = f76f0000000000000000000000000000
    - Turn the camera off and back on.
    - In `Menu → Shooting Menu → ISO sensitivity settings`, set **Auto ISO sensitivity control** to **OFF**.
    - Rotate the exposure mode dial to **`M` (Manual)** and engage **Live View (`Lv`)**.
-   - Rotate the **Shutter Speed** dial (`1/25s` to `1/8000s`) and hold **ISO + command dial** to verify real-time exposure simulation and live 64-bin luminance histogram response.
-   - Press the **`INFO`** button during Live View to cycle display overlays and show/hide the histogram.
+   - Rotate the **Shutter Speed** dial (`1/25s` to `1/8000s`) and hold **ISO + command dial** to verify real-time exposure simulation and live 64-bin luminance histogram response. *(Note: In Builds B4/B5, the histogram is always visible during Live View; an on/off toggle will be added in Build B6).*
