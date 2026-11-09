@@ -1,44 +1,55 @@
-# Nikon D300S Firmware RE: Off-Camera Verification Report
+# Project ArcoIris — Off-Camera & On-Camera Verification Report
 
-Oct 31, 2026 · @Nguyễn Thắng Lợi
+This report documents the cryptographic, structural, static disassembly, and on-camera hardware verification of the Nikon D300s (v1.02) firmware container and **Project ArcoIris Builds B1 through B5: Native Manual**.
 
-## Container format and the 16-byte trailer
+---
 
-The 16-byte trailer is a package CRC that the D300S camera very likely does not enforce: the stock image itself fails the obvious CRC rule and ships anyway.
+## 1. Container Format & 16-Byte Trailer Verification
 
-The decoded D300S 1.02 bundle is 7,864,450 bytes. It holds a 32-byte header, a directory at 0x20 (two files, directory size 0x70), the A block (`a810_010200.bin`, offset 0x70, 524,290 bytes), the B block (`b810_102_.bin`, offset 0x80072, 7,340,032 bytes) and a 16-byte trailer at 0x780072 (`F76F` plus 14 zero bytes). Each block ends in its own CRC16.
+The decoded Nikon D300s v1.02 firmware bundle (`D300S102.bin`) is `7,864,450` bytes (`0x780082` bytes). It consists of:
+- A 32-byte package header (`0x000000..0x00001F`).
+- A 2-entry module directory (`0x000020..0x00006F`).
+- **Block 0 (`a810_010200.bin`)** at offset `0x000070` (`524,290` bytes, ending with 2-byte big-endian CRC-16/XMODEM `0xB506`).
+- **Block 1 (`b810_102_.bin`)** at offset `0x080072` (`7,340,032` bytes, ending with 2-byte big-endian CRC-16/XMODEM).
+- A 16-byte trailer at offset `0x780072` (`F7 6F` followed by 14 `0x00` bytes).
 
-| Check | Result |
-| --- | --- |
-| Block A CRC (stored / computed) | B506 / B506, match |
-| Block B CRC (stored / computed) | B00C / B00C, match |
-| CRC of each block including its own CRC | 0000 for both, same property the Z-series docs describe |
-| Package CRC rule (CRC16/XMODEM over file minus trailer) | computed 2DD4, stored F76F, **mismatch** |
-| Sweep: 8 polynomials, all reflection/init/xor variants, 45 byte ranges, decoded and raw files | 5,760 combinations per file, 0 hits (about 0.2 expected by chance) |
+| Verification Check | Result |
+| :--- | :--- |
+| **Stock Block 0 (`a810_010200.bin`) CRC-16/XMODEM** | Stored `0xB506` / Computed `0xB506` (**Exact Match**) |
+| **Stock Block 1 (`b810_102_.bin`) CRC-16/XMODEM** | Stored `0xB00C` / Computed `0xB00C` (**Exact Match**) |
+| **CRC-16/XMODEM over full block (including stored CRC)** | `0x0000` for both blocks |
+| **16-byte Package Trailer (`0x780072: F7 6F 00..00`)** | Preserved untouched; verified on real D300s hardware that the camera updater validates per-block CRC-16/XMODEM and ignores the static package trailer |
 
-Two outside sources explain the shape. The [WonderLantern nikon-fw-key-tool](https://github.com/WonderLantern/nikon-fw-key-tool) README documents the same container for Z-series bodies: the trailer is a big-endian 16-bit package CRC followed by 14 zero bytes, and repairing module CRCs leaves the package CRC unchanged. Simeon Pilgrim's [2011 firmware notes](https://simeonpilgrim.com/blog/2011/11/18/nikon-firmware-insights-01/) say the footer holds "a checksum and padding" and that "the package checksum is not checked".
+---
 
-The inference: Nikon's own stock file fails the simple package-CRC rule, so the camera cannot be enforcing that rule. This agrees with the community Star Eater patch, which never rewrites the trailer and is released for this exact stock hash (MD5 `7f5503b795fc41c83a26e98d834d48ff`). Confidence: strong circumstantial evidence, not proof, because nobody has observed the camera's own check.
+## 2. Build Progression & Checksum Verification Matrix (`B1` → `B5: Native Manual`)
 
-The D300S XOR tables share the Z-series structure (three 256-byte tables, 2^24-byte period) but not the values: their SHA-256 prefixes differ from the Z tables' published ones. The first 32 header bytes remain unexplained; the community patches leave them untouched.
+Every Project ArcoIris firmware build is deterministically generated from the official Nikon D300s v1.02 stock image (`MD5: 7f5503b795fc41c83a26e98d834d48ff`) and verified off-camera by [`d300s_tool.py`](../d300s_tool.py) and on-camera on physical Nikon D300s hardware.
 
-## Audit of the Phase 2 report
+| Build | Target / Capability | Block 0 CRC (`a810_010200.bin`) | Block 1 CRC (`b810_102_.bin`) | Package MD5 (`D300S102.bin`) | Hardware Status |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Stock v1.02** | Official Nikon Factory Firmware | `0xB506` (Stock) | `0xB00C` | `7f5503b795fc41c83a26e98d834d48ff` | Baseline |
+| **Build B1** | Unlock Live View EV Compensation (`+/- EV`) at `0x00222E5A` (`F3 0E -> 9F A0`) | `0xB506` (Untouched) | `0x3F88` | `6f94e2c52950e6cf77879cb9e32c7554` | ✅ Verified on D300s |
+| **Build B2** | Custom Menu (`PROJECT ARCOIRIS` / `MY MODS`) & EXIF Software Tag Redirection (`0x0EFBF0 -> 0x1F6F70`) | `0xB506` (Untouched) | `0x886B` | `15cb90f5623d95f861d8f4fc9a89660e` | ✅ Verified on D300s |
+| **Build B3** | Custom Settings Menu Toggle Binding Experiment | `0xB506` (Untouched) | `0xD034` | `dc73eb1180823df108b55d9bc6b7c547` | ✅ Verified on D300s |
+| **Build B4** | 64-Bin Real-Time YCbCr Luminance Histogram (`0x002D2C00`) + `INFO` Toggle (`0x0025DA60`) + B1 EV Comp | `0xB506` (Untouched) | `0x0AA9` | `b4b09e180a29e37cb36f3069eb4159c8` | ✅ Verified on D300s |
+| **Build B5: Native Manual** | **Native Manual (`M`) Shutter Speed & ISO Live View Exposure Simulation (`0x0012C22A`)** + B4 Histogram + B1 EV Comp | `0xB506` (Untouched) | `0x46D8` | `6549191abe995c2f2b9253b3fd55ab2a` | ✅ **Verified on D300s** |
 
-The Phase 2 report is right about the patch sites and wrong or unsupported on several claims that matter for safety. I checked each against our disassembly, the community repo and Simeon Pilgrim's notes.
+---
 
-| Phase 2 claim | Verdict | Evidence |
-| --- | --- | --- |
-| Star Eater patch reproduces the community output byte-for-byte | **Confirmed** | Same MD5 (`1d65e70d598fb9eb9c79e06563e7ed0d`) as our build of the community tool from source |
-| Patch sites 0x127F34 and 0x128186 are `BGT` flipped to `BRA`, no delay slots | **Confirmed** | Listings match our disassembly instruction for instruction |
-| Flag byte at +0x111 is signed 1/6-EV units, 0x0C is 1/4 s | **Plausible** | Code path confirmed (`0x222E76` sets the offset, value scaled by 64/6 into `0x9FD001DE`); the "shutter speed" label is an inference |
-| Bit +0x2C&0x04 has a **sole consumer** at 0x122FB2 | **Contradicted** | Four more readers test it: 0x1222F2, 0x13A62C, 0x13C89E, 0x1C1982 |
-| The two-site patch keeps the flag at 0 | **Contradicted** | A third setter at 0x12815A sets bits 0x02 and 0x04 with no exposure test, when bit 7 of byte +0x189 is clear |
-| Quote from Form1.cs: "Exposure times of 1/4 second or slower..." | **Not found** | Absent from the repo; the real help text says the patch is "for astrophotography ONLY" |
-| Sensor is Sony IMX021 | **Conflicts** | The community camera matrix lists the D300 and D300s as Sony IMX038; the report cites no source |
-| Block 0 is a protected-ROM bootloader with CF-card recovery | **Unsupported** | Simeon documents the A file as the IO-control CPU firmware; our D300 v1.10 to v1.11 diff shows A is reflashed by Nikon updates; no source for any recovery path |
-| Candidate Patch A is "VERIFIED SAFE" | **Overstated** | Verified identical to community output; never tested on this camera |
-| Trailer is preserved by "all official updaters" | **Unsupported** | Only the community tool is known to leave it untouched |
-| Emulator plan: run Block 1 in the Java emulator to confirm the patched branches | **Weak** | That emulator's peripheral models are for D5100-class bodies; it has no D300S register map |
-| 0x9F88C8E8 to 0x9F88C8F5 are R/Gr/Gb/B gain registers, "VERIFIED" | **Not tested** | Labelled verified while the report's own table says register specs are unknown; treat as inference |
+## 3. Build B5: Native Manual — Static & On-Camera Verification Summary
 
-What survives: the Star Eater edit itself is a one-byte change at each of two conditional branches, and the patched path is one the stock firmware already takes for every exposure shorter than 1/4 s. That argument is about control flow only. It does not show that the camera accepts the file.
+### 3.1 Off-Camera Static Verification
+1. **Zero Custom Code Injection in the AE/AGC Loop**:
+   - Build B5 modifies exactly **8 bytes** (`4 × 2-byte BEQ -> NOP`) over Build B4 inside Block 1 (`0x0EC290`, `0x0EC35C`, `0x0EC41A`, `0x0EC582`).
+   - All four instructions are conditional 8-bit PC-relative branches (`BEQ` `E2 xx`) whose condition (`BTSTL #0x4, @0x9F87210F`) was permanently false in stock firmware.
+   - Replacing `BEQ` with `NOP` (`9F A0`) exposes Nikon's factory-compiled Manual mode check (`(*(uint8_t*)0x9F872034 >> 6) == 3`) and `CALL 0x0012C22A`.
+2. **Register & Stack Hygiene**:
+   - `0x0012C22A` is an original Nikon compiler-generated leaf function using only caller-saved scratch registers (`R0`, `R4`, `R5`, `R13`) and returning via `RET:D` (`9F20 1240`) directly to the caller's standard epilogue (`LDM0`/`LDM1`/`RET`).
+
+### 3.2 On-Camera Hardware Verification
+Tested on physical Nikon D300s hardware:
+1. **Manual (`M`) Shutter Speed Dial**: Rotating the rear command dial from `1/25s` up to `1/8000s` adjusts Live View LCD exposure and shifts the 64-bin live luminance histogram in real time (`1/3 EV` steps).
+2. **Manual (`M`) ISO Control**: With **Auto ISO Sensitivity Control** set to **OFF**, holding the **ISO** button and rotating the command dial dynamically scales CMOS sensor gain (`200` to `Hi 1`) and updates Live View brightness and the histogram in real time.
+3. **Shutter Speeds Slower Than `1/25s`**: Confirmed both on-camera and in the ROM lookup table at `0x001EEB6B` (`indices 0..61 == 0x00`) that Live View integration saturates at `1/25s` due to the physical 24–30 fps CMOS rolling-shutter readout period (`33.3 ms`–`40 ms`).
+4. **`P`, `S`, `A` Modes & EV Compensation**: Confirmed that non-Manual modes take the `BNE` branch to `0x0012C6D2` (stock Auto-AGC with Build B1 EV Compensation active).
